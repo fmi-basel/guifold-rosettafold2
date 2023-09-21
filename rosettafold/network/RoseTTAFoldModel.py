@@ -1,9 +1,11 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import torch
 import torch.nn as nn
-from Embeddings import MSA_emb, Extra_emb, Templ_emb, Recycling
-from Track_module import IterativeSimulator
-from AuxiliaryPredictor import DistanceNetwork, MaskedTokenNetwork, ExpResolvedNetwork, LDDTNetwork, PAENetwork, BinderNetwork
-from util import INIT_CRDS
+from rosettafold.network.Embeddings import MSA_emb, Extra_emb, Templ_emb, Recycling
+from rosettafold.network.Track_module import IterativeSimulator
+from rosettafold.network.AuxiliaryPredictor import DistanceNetwork, MaskedTokenNetwork, ExpResolvedNetwork, LDDTNetwork, PAENetwork, BinderNetwork
+from rosettafold.network.util import INIT_CRDS
 from torch import einsum
 
 class RoseTTAFoldModule(nn.Module):

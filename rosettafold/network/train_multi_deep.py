@@ -1,3 +1,5 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import sys, os
 from contextlib import ExitStack, nullcontext
 import time
@@ -7,14 +9,14 @@ from collections import OrderedDict
 import torch
 import torch.nn as nn
 from torch.utils import data
-from data_loader import get_train_valid_set, loader_pdb, loader_fb, loader_complex, Dataset, DatasetComplex, DistilledDataset, DistributedWeightedSampler
-from kinematics import xyz_to_c6d, c6d_to_bins2, xyz_to_t2d
-from RoseTTAFoldModel  import RoseTTAFoldModule
-from loss import *
-from util import *
-from util_module import XYZConverter
-from scheduler import get_stepwise_decay_schedule_with_warmup
-from symmetry import symm_subunit_matrix, find_symm_subs, get_symm_map
+from rosettafold.network.data_loader import get_train_valid_set, loader_pdb, loader_fb, loader_complex, Dataset, DatasetComplex, DistilledDataset, DistributedWeightedSampler
+from rosettafold.network.kinematics import xyz_to_c6d, c6d_to_bins2, xyz_to_t2d
+from rosettafold.network.RoseTTAFoldModel  import RoseTTAFoldModule
+from rosettafold.network.loss import *
+from rosettafold.network.util import *
+from rosettafold.network.util_module import XYZConverter
+from rosettafold.network.scheduler import get_stepwise_decay_schedule_with_warmup
+from rosettafold.network.symmetry import symm_subunit_matrix, find_symm_subs, get_symm_map
 
 # distributed data parallel
 import torch.distributed as dist

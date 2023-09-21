@@ -1,12 +1,14 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import torch
 from torch.utils import data
 import os
 import csv
 from dateutil import parser
 import numpy as np
-from parsers import parse_a3m, parse_pdb
-from chemical import INIT_CRDS
-from util import center_and_realign_missing, random_rot_trans
+from rosettafold.network.parsers import parse_a3m, parse_pdb
+from rosettafold.network.chemical import INIT_CRDS
+from rosettafold.network.util import center_and_realign_missing, random_rot_trans
 
 def MSABlockDeletion(msa, ins, nb=5):
     '''

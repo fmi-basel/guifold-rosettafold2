@@ -7,6 +7,7 @@ Created on Apr 30, 2014
 @author: meiermark
 '''
 
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
 
 import sys
 import mmap

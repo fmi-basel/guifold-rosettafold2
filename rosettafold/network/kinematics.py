@@ -1,7 +1,9 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import numpy as np
 import torch
-from chemical import INIT_CRDS
-from util import get_Cb
+from rosettafold.network.chemical import INIT_CRDS
+from rosettafold.network.util import get_Cb
 
 PARAMS = {
     "DMIN"    : 2.0,

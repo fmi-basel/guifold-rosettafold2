@@ -1,3 +1,5 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import sys
 
 import numpy as np
@@ -6,8 +8,8 @@ import torch
 import scipy.sparse
 from scipy.spatial.transform import Rotation
 
-from chemical import *
-from scoring import *
+from rosettafold.network.chemical import *
+from rosettafold.network.scoring import *
 
 def random_rot_trans(xyz, random_noise=20.0):
     # xyz: (N, L, 27, 3)

@@ -1,3 +1,5 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import torch
 import numpy as np
 

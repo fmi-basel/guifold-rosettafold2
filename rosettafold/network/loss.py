@@ -1,11 +1,13 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import torch
 import torch.nn as nn
 import numpy as np
 from torch import einsum
-from chemical import aa2num
-from util import rigid_from_3_points
-from kinematics import get_dih
-from scoring import HbHybType
+from rosettafold.network.chemical import aa2num
+from rosettafold.network.util import rigid_from_3_points
+from rosettafold.network.kinematics import get_dih
+from rosettafold.network.scoring import HbHybType
 
 # Loss functions for the training
 # 1. BB rmsd loss

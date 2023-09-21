@@ -1,5 +1,7 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import argparse
-import data_loader
+import rosettafold.network.data_loader
 import os
 
 TRUNK_PARAMS = ['n_extra_block', 'n_main_block', 'n_ref_block',\

@@ -1,3 +1,5 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

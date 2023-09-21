@@ -1,14 +1,16 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import einsum
 import torch.utils.checkpoint as checkpoint
-from util import cross_product_matrix
-from util_module import *
-from Attention_module import *
-from SE3_network import SE3TransformerWrapper
-from kinematics import normQ, avgQ, Qs2Rs, Rs2Qs
-from symmetry import get_symm_map
+from rosettafold.network.util import cross_product_matrix
+from rosettafold.network.util_module import *
+from rosettafold.network.Attention_module import *
+from rosettafold.network.SE3_network import SE3TransformerWrapper
+from rosettafold.network.kinematics import normQ, avgQ, Qs2Rs, Rs2Qs
+from rosettafold.network.symmetry import get_symm_map
 
 
 # Components for three-track blocks

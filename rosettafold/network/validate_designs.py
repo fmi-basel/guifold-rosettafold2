@@ -1,19 +1,21 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import sys, os
 import time
 import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils import data
-from parsers import parse_a3m, read_templates, read_template_pdb, parse_pdb, parse_pdb_w_seq
-from RoseTTAFoldModel  import RoseTTAFoldModule
+from rosettafold.network.parsers import parse_a3m, read_templates, read_template_pdb, parse_pdb, parse_pdb_w_seq
+from rosettafold.network.RoseTTAFoldModel  import RoseTTAFoldModule
 import util
 from collections import namedtuple
-from ffindex import *
-from featurizing import MSAFeaturize, MSABlockDeletion
-from kinematics import xyz_to_c6d, xyz_to_t2d
-from chemical import INIT_CRDS
-from util_module import XYZConverter
-from symmetry import symm_subunit_matrix, find_symm_subs, get_symm_map
+from rosettafold.network.ffindex import *
+from rosettafold.network.featurizing import MSAFeaturize, MSABlockDeletion
+from rosettafold.network.kinematics import xyz_to_c6d, xyz_to_t2d
+from rosettafold.network.chemical import INIT_CRDS
+from rosettafold.network.util_module import XYZConverter
+from rosettafold.network.symmetry import symm_subunit_matrix, find_symm_subs, get_symm_map
 import json
 
 MAX_CYCLE = 20

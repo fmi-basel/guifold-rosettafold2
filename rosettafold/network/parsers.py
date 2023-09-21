@@ -1,14 +1,16 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import numpy as np
 import scipy
 import scipy.spatial
 import string
 import os,re
 import random
-import util
+import rosettafold.network.util as util
 import gzip
 import torch
-from ffindex import *
-from chemical import INIT_CRDS
+from rosettafold.network.ffindex import *
+from rosettafold.network.chemical import INIT_CRDS
 
 to1letter = {
     "ALA":'A', "ARG":'R', "ASN":'N', "ASP":'D', "CYS":'C',
@@ -26,7 +28,7 @@ def parse_a3m(filename, max_seq=5000):
 
     table = str.maketrans(dict.fromkeys(string.ascii_lowercase))
 
-    #print(filename)
+    print(filename)
     
     if filename.split('.')[-1] == 'gz':
         fp = gzip.open(filename, 'rt')

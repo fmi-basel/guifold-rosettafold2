@@ -1,20 +1,22 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import sys, os
 import time
 import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils import data
-from parsers import parse_a3m, read_templates, read_template_pdb, parse_pdb
-from RoseTTAFoldModel  import RoseTTAFoldModule
-import util
+from rosettafold.network.parsers import parse_a3m, read_templates, read_template_pdb, parse_pdb
+from rosettafold.network.RoseTTAFoldModel  import RoseTTAFoldModule
+import rosettafold.network.util as util
 from collections import namedtuple
-from ffindex import *
-from featurizing import MSAFeaturize, MSABlockDeletion
-from kinematics import xyz_to_c6d, xyz_to_t2d
-from chemical import INIT_CRDS
-from util_module import XYZConverter
-from symmetry import symm_subunit_matrix, find_symm_subs, get_symm_map
-from data_loader import merge_a3m_hetero
+from rosettafold.network.ffindex import *
+from rosettafold.network.featurizing import MSAFeaturize, MSABlockDeletion
+from rosettafold.network.kinematics import xyz_to_c6d, xyz_to_t2d
+from rosettafold.network.chemical import INIT_CRDS
+from rosettafold.network.util_module import XYZConverter
+from rosettafold.network.symmetry import symm_subunit_matrix, find_symm_subs, get_symm_map
+from rosettafold.network.data_loader import merge_a3m_hetero
 import json
 import random
 
@@ -187,7 +189,7 @@ class Predictor():
         return True
 
     def predict(
-        self, inputs, out_prefix, symm="C1", ffdb=None,
+        self, inputs, output_dir=None, symm="C1", ffdb=None,
         n_recycles=4, n_models=1, subcrop=-1, nseqs=256, nseqs_full=2048,
         n_templ=4, msa_mask=0.0, is_training=False, msa_concat_mode="diag"
     ):
@@ -196,6 +198,7 @@ class Predictor():
         ###
         # pass 1, combined MSA
         Ls_blocked, Ls, msas, inss = [], [], [], []
+        inputs = inputs.split(" ")
         for i,seq_i in enumerate(inputs):
             fseq_i =  seq_i.split(':')
             a3m_i = fseq_i[0]
@@ -321,7 +324,7 @@ class Predictor():
                 xyz_prev, mask_prev, same_chain, idx_pdb,
                 symmids, symmsub, symmRs, symmmeta,  Ls, 
                 n_recycles, nseqs, nseqs_full, subcrop,
-                "%s_%02d"%(out_prefix, i_trial),
+                output_dir, i_trial,
                 msa_mask=msa_mask
             )
             runtime = time.time() - start_time
@@ -334,7 +337,7 @@ class Predictor():
         t1d, t2d, xyz_t, alpha_t, mask_t, 
         xyz_prev, mask_prev, same_chain, idx_pdb, 
         symmids, symmsub, symmRs, symmmeta, L_s, 
-        n_recycles, nseqs, nseqs_full, subcrop, out_prefix,
+        n_recycles, nseqs, nseqs_full, subcrop, output_dir, i_trial,
         msa_mask=0.0,
     ):
         self.xyz_converter = self.xyz_converter.to(self.device)
@@ -459,13 +462,16 @@ class Predictor():
         for i in range(O):
             outdata['pae_chain0_'+str(i)] = 0.5 * (best_pae[:,0:Lasu,i*Lasu:(i+1)*Lasu].mean() + best_pae[:,i*Lasu:(i+1)*Lasu,0:Lasu].mean()).item()
 
-        with open("%s.json"%(out_prefix), "w") as outfile:
+        json_output_path = os.path.join(output_dir, f"results_{i_trial}.json")
+        with open(json_output_path, "w") as outfile:
             json.dump(outdata, outfile, indent=4)
 
-        util.writepdb("%s_pred.pdb"%(out_prefix), best_xyzfull[0], seq_full[0], L_s, bfacts=100*best_lddtfull[0])
+        pdb_output_path = os.path.join(output_dir, f'unrelaxed_model_{i_trial}.pdb')
+        util.writepdb(pdb_output_path, best_xyzfull[0], seq_full[0], L_s, bfacts=100*best_lddtfull[0])
 
         prob_s = [prob.permute(0,2,3,1).detach().cpu().numpy().astype(np.float16) for prob in prob_s]
-        np.savez_compressed("%s.npz"%(out_prefix),
+        npz_output_path = os.path.join(output_dir, f'results_{i_trial}.npz')
+        np.savez_compressed(npz_output_path,
             dist=prob_s[0].astype(np.float16),
             lddt=best_lddt[0].detach().cpu().numpy().astype(np.float16),
             pae=best_pae[0].detach().cpu().numpy().astype(np.float16))
@@ -492,7 +498,8 @@ if __name__ == "__main__":
 
     pred.predict(
         inputs=args.inputs, 
-        out_prefix=args.prefix, 
+        out_prefix=args.prefix,
+        output_dir=args.output_dir, 
         symm=args.symm, 
         n_recycles=args.n_recycles, 
         n_models=args.n_models, 

@@ -1,3 +1,5 @@
+# Modified by Georg Kempf, Friedrich Miescher Institute for Biomedical Research
+
 import sys, os
 from contextlib import ExitStack, nullcontext
 import time
@@ -8,16 +10,16 @@ import torch
 import torch.nn as nn
 from torch.utils import data
 from functools import partial
-from data_loader import (
+from rosettafold.network.data_loader import (
     get_train_valid_set, loader_pdb, loader_fb, loader_complex,
     Dataset, DatasetComplex, DistilledDataset, DistributedWeightedSampler
 )
-from kinematics import xyz_to_c6d, c6d_to_bins, xyz_to_t2d, xyz_to_bbtor
-from RoseTTAFoldModel  import RoseTTAFoldModule
-from loss import *
-from util import *
-from util_module import XYZConverter
-from scheduler import get_linear_schedule_with_warmup, get_stepwise_decay_schedule_with_warmup
+from rosettafold.network.kinematics import xyz_to_c6d, c6d_to_bins, xyz_to_t2d, xyz_to_bbtor
+from rosettafold.network. RoseTTAFoldModel  import RoseTTAFoldModule
+from rosettafold.network.loss import *
+from rosettafold.network.util import *
+from rosettafold.network.util_module import XYZConverter
+from rosettafold.network.scheduler import get_linear_schedule_with_warmup, get_stepwise_decay_schedule_with_warmup
 
 # distributed data parallel
 import torch.distributed as dist
