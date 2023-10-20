@@ -313,24 +313,27 @@ class Predictor():
             self.model.train()
         else:
             self.model.eval()
+        results = []
         for i_trial in range(n_models):
             #if os.path.exists("%s_%02d_init.pdb"%(out_prefix, i_trial)):
             #    continue
             torch.cuda.reset_peak_memory_stats()
             start_time = time.time()
-            self.run_prediction(
-                msa_orig, ins_orig, 
-                t1d, t2d, xyz_t[:,:,:,1], alpha_t, mask_t_2d, 
-                xyz_prev, mask_prev, same_chain, idx_pdb,
-                symmids, symmsub, symmRs, symmmeta,  Ls, 
-                n_recycles, nseqs, nseqs_full, subcrop,
-                output_dir, i_trial,
-                msa_mask=msa_mask
-            )
+            result = self.run_prediction(
+                                        msa_orig, ins_orig, 
+                                        t1d, t2d, xyz_t[:,:,:,1], alpha_t, mask_t_2d, 
+                                        xyz_prev, mask_prev, same_chain, idx_pdb,
+                                        symmids, symmsub, symmRs, symmmeta,  Ls, 
+                                        n_recycles, nseqs, nseqs_full, subcrop,
+                                        output_dir, i_trial,
+                                        msa_mask=msa_mask
+                                    )
             runtime = time.time() - start_time
             vram = torch.cuda.max_memory_allocated() / 1e9
             print(f"runtime={runtime:.2f} vram={vram:.2f}")
             torch.cuda.empty_cache()
+            results.append(result)
+        return results
 
     def run_prediction(
         self, msa_orig, ins_orig, 
@@ -462,7 +465,7 @@ class Predictor():
         for i in range(O):
             outdata['pae_chain0_'+str(i)] = 0.5 * (best_pae[:,0:Lasu,i*Lasu:(i+1)*Lasu].mean() + best_pae[:,i*Lasu:(i+1)*Lasu,0:Lasu].mean()).item()
 
-        json_output_path = os.path.join(output_dir, f"results_{i_trial}.json")
+        json_output_path = os.path.join(output_dir, f"result_model_{i_trial}.json")
         with open(json_output_path, "w") as outfile:
             json.dump(outdata, outfile, indent=4)
 
@@ -470,11 +473,15 @@ class Predictor():
         util.writepdb(pdb_output_path, best_xyzfull[0], seq_full[0], L_s, bfacts=100*best_lddtfull[0])
 
         prob_s = [prob.permute(0,2,3,1).detach().cpu().numpy().astype(np.float16) for prob in prob_s]
-        npz_output_path = os.path.join(output_dir, f'results_{i_trial}.npz')
+        npz_output_path = os.path.join(output_dir, f'result_model_{i_trial}.npz')
+        dist = prob_s[0].astype(np.float16)
+        best_lddt = best_lddt[0].detach().cpu().numpy().astype(np.float16)
+        best_pae = best_pae[0].detach().cpu().numpy().astype(np.float16)
         np.savez_compressed(npz_output_path,
-            dist=prob_s[0].astype(np.float16),
-            lddt=best_lddt[0].detach().cpu().numpy().astype(np.float16),
-            pae=best_pae[0].detach().cpu().numpy().astype(np.float16))
+            dist=dist,
+            lddt=best_lddt,
+            pae=best_pae)
+        return {'plddt': best_lddt, 'predicted_aligned_error': best_pae}
 
 
 
